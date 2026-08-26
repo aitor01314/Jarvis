@@ -1,0 +1,20 @@
+# Configuración de cerebros de JARVIS.
+# Los modelos concretos por proveedor viven en
+# core/infrastructure/providers/registry.py (DEFAULT_MODELS);
+# este archivo definirá prompts y herramientas por cerebro (Fase Beta).
+
+brains:
+  conversacional:
+    descripcion: Conversación natural, memoria, contexto y planificación.
+  programacion:
+    descripcion: Desarrollo, refactorización, arquitectura, debug.
+  matematico:
+    descripcion: Cálculo, optimización, álgebra, estadística.
+  creativo:
+    descripcion: Historias, guiones, marketing, copywriting.
+  visual:
+    descripcion: Análisis de imágenes, OCR, diagramas.
+  voz:
+    descripcion: STT, TTS, conversación continua, wake word.
+  autonomo:
+    descripcion: Planifica tareas largas, divide objetivos, ejecuta y revisa.
