@@ -11,9 +11,11 @@ import asyncio
 from dotenv import load_dotenv
 
 from core.application.failover import FailoverChain
+from core.application.orchestrator import Orchestrator
 from core.application.router import route
 from core.domain.contracts import ProviderError
 from core.domain.models import CompletionRequest, Message, Role
+from core.infrastructure.daemon_client import DaemonClient
 from core.infrastructure.providers.registry import build_providers
 from core.interfaces.api import SYSTEM_PROMPT
 
@@ -21,6 +23,7 @@ from core.interfaces.api import SYSTEM_PROMPT
 async def main() -> None:
     load_dotenv()
     chain = FailoverChain(build_providers())
+    orchestrator = Orchestrator(chain, DaemonClient(), SYSTEM_PROMPT)
     history: list[Message] = [Message(role=Role.SYSTEM, content=SYSTEM_PROMPT)]
     print("JARVIS listo. Escribe 'salir' para terminar.\n")
     while True:
@@ -30,6 +33,10 @@ async def main() -> None:
             break
         if not text or text.lower() in {"salir", "exit"}:
             break
+        system = await orchestrator.try_system_action(text)
+        if system is not None:
+            print(f"JARVIS (sistema) > {system.reply}\n")
+            continue
         brain = route(text)
         history.append(Message(role=Role.USER, content=text))
         request = CompletionRequest(messages=history, brain=brain, stream=True)
